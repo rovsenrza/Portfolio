@@ -137,8 +137,6 @@ a{text-decoration: underline;}}
 .project_card:hover img{transform: translateY(calc(-100% + 300px));}
 /* Projects end */
 /* footer */
-footer{
-}
 .footer_inner{
   display: grid;
   grid-template-columns: repeat(1,1fr);
