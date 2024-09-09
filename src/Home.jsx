@@ -94,7 +94,7 @@ function Home() {
               <div className="project_img">
               <img src={labor} alt="ascalini" />
               </div>
-              <h4>Labor LLc</h4>
+              <h4>Labor LLC</h4>
               </div>
             </div>
             
