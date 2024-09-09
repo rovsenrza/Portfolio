@@ -15,7 +15,7 @@ function Footer() {
         <div className="footer_right">
 
         <h3>Get in touch</h3>
-        <p>As a passionate frontend developer, I’m dedicated to crafting seamless, engaging user experiences. Let’s transform your ideas into reality—reach out today to discuss how we can collaborate!</p>
+        <p>As a passionate frontend developer, I’m dedicated to crafting seamless, engaging user experiences. Let’s transform your ideas into reality—reach out today to discuss how we can collaborate! </p>
         <ul>
           <li><a href="https://www.facebook.com/profile.php?id=100091345232600"><RiFacebookFill /></a></li>
           <li><a href="https://www.instagram.com/rzayevv.o52/"><FaInstagram/></a></li>
