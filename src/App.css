@@ -90,8 +90,8 @@ header .container {
   position: relative;
   font-weight: 500;
   background: linear-gradient(to left ,rgba(0,0,0,.4),#d5d5d5);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 .banner_inner a{
   background-color: #d5d5d5;
