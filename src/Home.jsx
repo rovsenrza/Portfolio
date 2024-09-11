@@ -20,7 +20,7 @@ function Home() {
             <div className="all_banner">
             <div className="banner_img"><img src={rovsanlogo} alt="logo" width={"100%"}/></div>
             <p>Hi I'm Rovshan Rzayev <img src={handshake} width="20px" alt="dasdas" /></p>
-            <h1>Crafting seamless <br /> web experiences with code.</h1>
+            <h1>Crafting seamless <br /> web experiences with <br /> code.</h1>
             <a href="https://wa.me/+994507193149">Contact with me</a>
           </div>
           </div>
