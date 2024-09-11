@@ -2,7 +2,7 @@ import React from 'react'
 import handshake from "../public/img/handshake.png"
 import rovsanlogo from "../public/img/rovshan_logo.webp"
 import ascalini from "../public/img/ascalini.png"
-import afgen from "../public/img/afgen.png"
+import afgen from "../public/img/afgen-new.png"
 import ertok from "../public/img/ertok.png"
 import azdizayn from "../public/img/azdizayn.png"
 import amazon from "../public/img/amazon.png"
