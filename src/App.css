@@ -228,7 +228,7 @@ a{text-decoration: underline;}}
     width: 960px;
   }
   .banner_inner h1 {
-    font-size: 3.3vw;
+    font-size: 4.1vw !important;
     font-weight: 500;
   }
 }
