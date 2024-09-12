@@ -62,8 +62,7 @@ header .container {
 /* header end */
 /* banner */
 .banner{
-  background:url("../public/img/banner_background.png")center/cover;
-  backdrop-filter: opacity(.1);
+  background:url("../public/img/banner_background.png")center/contain;
   overflow: hidden;
 
 }
@@ -88,11 +87,13 @@ header .container {
   gap: 4px;
 }
 .banner_inner h1{
+  margin-block:8px;
   position: relative;
   font-weight: 500;
-  background: linear-gradient(to left ,rgba(0,0,0,.4),#d5d5d5);
+  background: linear-gradient(to left ,#d5d5d5,#d5d5d5);
   background-clip: text;
   color: transparent;
+  font-size:36px;
 }
 .banner_inner a{
   background-color: #d5d5d5;
@@ -186,8 +187,8 @@ a{text-decoration: underline;}}
 .contact_card::after{
   position: absolute;
   content: " ";
-  top: 10px;
-  left: 10px;
+  top: 7px;
+  left: 7px;
   z-index: -1;
   background-color: #454545;
   width: 100%;
