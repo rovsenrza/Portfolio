@@ -33,7 +33,7 @@ function Home() {
             <div className="about_content">
             <h3>About me</h3>
             <p>I'm Rovsan Rzayev, a frontend developer with over two years of experience in the industry. I specialize in creating engaging, user-friendly web applications using the latest technologies and frameworks. My expertise spans HTML, CSS, JavaScript and React, allowing me to turn complex design ideas into functional, visually appealing interfaces. I pride myself on staying current with the latest trends and tools, which helps me deliver innovative and effective solutions. My goal is to craft seamless user experiences and high-quality results, ensuring that every project meets the demands of modern web standards.</p>
-            <p>For Resume: <a href="https://drive.google.com/file/d/1ykdgs3l8nPv44kMPaLmt3WPvKPPS62Zd/view?usp=sharing">click here</a></p>            
+            <p>For Resume: <a href="https://drive.google.com/file/d/1NhYymoY4XPxf74UQa4kW-zGIEWqotZ_E/view?usp=sharing">click here</a></p>            
             </div>
             <div className="about_img"><img src={logo} alt="dasdas" /></div>
             </div>
