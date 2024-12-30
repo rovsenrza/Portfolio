@@ -3,7 +3,7 @@ import handshake from "../public/img/handshake.png"
 import rovsanlogo from "../public/img/rovshan_logo.webp"
 import ascalini from "../public/img/ascalini.png"
 import afgen from "../public/img/afgen-new.png"
-
+import giani from "../public/img/giani.png"
 import ertok from "../public/img/ertok.png"
 import azdizayn from "../public/img/azdizayn.png"
 import amazon from "../public/img/amazon.png"
@@ -12,6 +12,10 @@ import azeturizm from "../public/img/azeturizm.png"
 import integro from "../public/img/integro.png"
 import labor from "../public/img/labor.png"
 import logo from "../public/img/Black Simple Personal Logo.png"
+import nflowers from "../public/img/nflowers.png"
+import prime from "../public/img/prime.png"
+import unilift from "../public/img/unilift.png"
+import azcosmetics from "../public/img/az-cosmetics.png"
 function Home() {
   return (
     <main>
@@ -72,6 +76,36 @@ function Home() {
               <img src={amazon} alt="ascalini" />
               </div>
               <h4>Amazon Travel</h4>
+              </div>
+              <div className="project_card">
+              <div className="project_img">
+              <img src={nflowers} alt="nflowers" />
+              </div>
+              <h4>NFlowers</h4>
+              </div>
+              <div className="project_card">
+              <div className="project_img">
+              <img src={azcosmetics} alt="azcosmetics" />
+              </div>
+              <h4>Az Cosmetics</h4>
+              </div>
+              <div className="project_card">
+              <div className="project_img">
+              <img src={prime} alt="prime" />
+              </div>
+              <h4>Prime Appliance Repair LLC</h4>
+              </div>
+              <div className="project_card">
+              <div className="project_img">
+              <img src={unilift} alt="unilift" />
+              </div>
+              <h4>Unilift</h4>
+              </div>
+              <div className="project_card">
+              <div className="project_img">
+              <img src={giani} alt="giani" />
+              </div>
+              <h4>Giani Milani</h4>
               </div>
               <div className="project_card">
               <div className="project_img">
