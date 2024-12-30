@@ -16,6 +16,7 @@ import nflowers from "../public/img/nflowers.png"
 import prime from "../public/img/prime.png"
 import unilift from "../public/img/unilift.png"
 import azcosmetics from "../public/img/az-cosmetics.png"
+
 function Home() {
   return (
     <main>
