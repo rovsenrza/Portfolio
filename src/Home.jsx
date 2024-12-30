@@ -17,8 +17,7 @@ import prime from "../public/img/prime.png"
 import unilift from "../public/img/unilift.png"
 import azcosmetics from "../public/img/az-cosmetics.png"
 
-function Home() {
-  
+function Home() { 
   return (
     <main>
         <div className="banner">
