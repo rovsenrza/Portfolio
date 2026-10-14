@@ -75,14 +75,19 @@ export function initReveals(root) {
         }),
     });
 
-    gsap.from(".contact_card", {
-      y: 40,
-      opacity: 0,
-      duration: 0.9,
-      ease: "expo.out",
-      stagger: 0.12,
-      scrollTrigger: { trigger: ".footer_left", start: "top 85%", once: true },
-    });
+    // the footer sits outside <main>, so target it by element rather than scoped selector
+    const footerCards = document.querySelectorAll(".contact_card");
+    const footerLeft = document.querySelector(".footer_left");
+    if (footerCards.length && footerLeft) {
+      gsap.from(footerCards, {
+        y: 40,
+        opacity: 0,
+        duration: 0.9,
+        ease: "expo.out",
+        stagger: 0.12,
+        scrollTrigger: { trigger: footerLeft, start: "top bottom", once: true },
+      });
+    }
   }, root);
   return () => ctx.revert();
 }

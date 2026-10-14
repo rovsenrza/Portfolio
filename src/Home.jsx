@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CodeToPixels from "./CodeToPixels";
 import { initReveals, initTilt, initMagnetic, prefersReduced } from "./fx/motion";
 import { contact, skills, projects } from "./data";
@@ -76,6 +77,12 @@ function Home() {
     return () => cleanups.forEach((c) => c());
   }, []);
   const shown = filter === "all" ? projects : projects.filter((p) => p.type === filter);
+
+  // the grid height changes with the filter, so every trigger below it must re-measure
+  useEffect(() => {
+    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(id);
+  }, [filter]);
 
   return (
     <main ref={mainRef}>
