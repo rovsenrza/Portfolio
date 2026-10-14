@@ -17,7 +17,7 @@ export const skills = {
   web: ["JavaScript", "TypeScript", "React", "HTML", "CSS / SCSS", "Tailwind", "Laravel", "Figma"],
 };
 
-// Mixed on purpose: iOS and web work side by side, newest and strongest first.
+// Mixed on purpose: iOS and web work side by side, strongest first.
 export const projects = [
   {
     name: "Ru App Store",
@@ -28,9 +28,12 @@ export const projects = [
     href: "https://ruappstore.com",
   },
   {
-    name: "Ascalini",
+    name: "RVD Cabinet",
     type: "web",
-    image: img("work/ascalini.webp"),
+    note: "React + TypeScript customer dashboard",
+    image: img("work/rvd-devices.webp"),
+    center: true,
+    href: "https://rvd-dashboard.vercel.app",
   },
   {
     name: "Green & Tasty",
@@ -41,9 +44,12 @@ export const projects = [
     href: "https://github.com/rovsenrza/Green-Tasty",
   },
   {
-    name: "Afgen GDM",
+    name: "Media-Ideya",
     type: "web",
-    image: img("work/afgen-new.webp"),
+    note: "Cross-marketing advertising agency",
+    image: img("work/mediaideya-devices.webp"),
+    center: true,
+    href: "https://mediaideya.ru",
   },
   {
     name: "Marketplace",
@@ -54,12 +60,12 @@ export const projects = [
     href: "https://github.com/rovsenrza/MarketPlace-ECommerce",
   },
   {
-    name: "RVD Cabinet",
+    name: "LaoCar",
     type: "web",
-    note: "React + TypeScript dashboard",
-    image: img("work/rvd-devices.webp"),
+    note: "Premium car rental in Minsk",
+    image: img("work/laocar-devices.webp"),
     center: true,
-    href: "https://rvd-dashboard.vercel.app",
+    href: "https://laocar.by",
   },
   {
     name: "MyGov",
@@ -69,18 +75,11 @@ export const projects = [
     center: true,
     href: "https://apps.apple.com/az/app/mygov/id1533956540",
   },
-  { name: "LaoCar", type: "web", note: "Premium car rental site", image: img("work/laocar-devices.webp"), center: true, href: "https://laocar.by" },
-  { name: "Media-Ideya", type: "web", note: "Agency site, Figma to DLE", image: img("projects/mediaideya.webp"), center: true, href: "https://github.com/rovsenrza/Media-Ideya" },
-  { name: "Ertok LLC", type: "web", image: img("work/ertok.webp") },
-  { name: "Azdizayn LLC", type: "web", image: img("work/azdizayn.webp") },
-  { name: "Amazon Travel", type: "web", image: img("work/amazon.webp") },
-  { name: "NFlowers", type: "web", image: img("work/nflowers.webp") },
-  { name: "Az Cosmetics", type: "web", image: img("work/az-cosmetics.webp") },
-  { name: "Prime Appliance Repair LLC", type: "web", image: img("work/prime.webp") },
-  { name: "Unilift", type: "web", image: img("work/unilift.webp") },
-  { name: "Giani Milani", type: "web", image: img("work/giani.webp") },
-  { name: "Siren Trading LLC", type: "web", image: img("work/siren.webp") },
-  { name: "Azeturizm", type: "web", image: img("work/azeturizm.webp") },
-  { name: "Integro Group LLC", type: "web", image: img("work/integro.webp") },
-  { name: "Labor LLC", type: "web", image: img("work/labor.webp") },
+  { name: "Jeywa Studio", type: "web", note: "Web design and development studio", image: img("work/jeywa-devices.webp"), center: true, href: "https://jeywastudio.com/az" },
+  { name: "Azeturizm", type: "web", note: "Travel and tours", image: img("work/azeturizm-devices.webp"), center: true, href: "https://azeturizm.az" },
+  { name: "Amazon Travel", type: "web", note: "Travel agency with tour search", image: img("work/amazontravel-devices.webp"), center: true, href: "https://amazontravel.az" },
+  { name: "Little Barista", type: "web", note: "Mobile catering in Moscow", image: img("work/littlebarista-devices.webp"), center: true, href: "https://littlebarristafoodtruck.ru" },
+  { name: "Vega", type: "web", note: "Electronics online store", image: img("work/vega-devices.webp"), center: true, href: "https://vegamsk.ru" },
+  { name: "Az Cosmetics", type: "web", note: "Cosmetology equipment store", image: img("work/azcosmetics-devices.webp"), center: true, href: "https://az-cosmetics.az" },
+  { name: "Tutti", type: "web", note: "Furniture hardware catalog", image: img("work/tutti-devices.webp"), center: true, href: "https://tutti.az" },
 ];
