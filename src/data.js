@@ -57,7 +57,8 @@ export const projects = [
     name: "RVD Cabinet",
     type: "web",
     note: "React + TypeScript dashboard",
-    image: img("work/rvd.webp"),
+    image: img("work/rvd-devices.webp"),
+    center: true,
     href: "https://rvd-dashboard.vercel.app",
   },
   {
@@ -68,7 +69,7 @@ export const projects = [
     center: true,
     href: "https://apps.apple.com/az/app/mygov/id1533956540",
   },
-  { name: "LaoCar", type: "web", note: "Premium car rental site", image: img("projects/laocar.webp"), center: true, href: "https://laocar.by" },
+  { name: "LaoCar", type: "web", note: "Premium car rental site", image: img("work/laocar-devices.webp"), center: true, href: "https://laocar.by" },
   { name: "Media-Ideya", type: "web", note: "Agency site, Figma to DLE", image: img("projects/mediaideya.webp"), center: true, href: "https://github.com/rovsenrza/Media-Ideya" },
   { name: "Ertok LLC", type: "web", image: img("work/ertok.webp") },
   { name: "Azdizayn LLC", type: "web", image: img("work/azdizayn.webp") },
