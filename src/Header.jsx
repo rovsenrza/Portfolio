@@ -25,6 +25,11 @@ function Header() {
             <li><a href={contact.github}>GitHub</a></li>
             <li aria-hidden="true">/</li>
             <li><a href={contact.instagram}>Instagram</a></li>
+            <li>
+              <button type="button" className="term_btn" onClick={() => window.dispatchEvent(new Event("open-terminal"))}>
+                <span aria-hidden="true">&gt;_</span> Terminal <kbd>`</kbd>
+              </button>
+            </li>
           </ul>
         </nav>
       </div>

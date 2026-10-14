@@ -8,7 +8,7 @@ function Footer() {
       <div className="container">
         <div className="footer_inner">
           <div className="footer_right">
-            <h3>Get in touch</h3>
+            <h3 data-reveal>Get in touch</h3>
             <p>
               Looking for an iOS engineer, or need a fast, polished website? I build native apps in Swift and web
               interfaces in React. Tell me about your project and let’s see how I can help.
@@ -32,7 +32,12 @@ function Footer() {
             </a>
           </div>
         </div>
-        <p className="copyright">© {new Date().getFullYear()} Rovshan Rzayev</p>
+        <div className="copyright">
+          <span>© {new Date().getFullYear()} Rovshan Rzayev</span>
+          <button type="button" className="term_footer" onClick={() => window.dispatchEvent(new Event("open-terminal"))}>
+            &gt;_ open the terminal
+          </button>
+        </div>
       </div>
     </footer>
   );
