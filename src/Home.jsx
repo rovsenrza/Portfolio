@@ -21,7 +21,7 @@ function ProjectCard({ project }) {
       <Tag className="project_link" {...(href ? { href, target: "_blank", rel: "noreferrer" } : {})}>
         <div className={`project_img${image ? "" : " project_img--text"}${center ? " project_img--center" : ""}${contain ? " project_img--contain" : ""}`}>
           {image ? (
-            <img src={image} alt={`${name} screens`} loading="lazy" />
+            <img src={image} alt={`${name} screens`} loading="lazy" decoding="async" />
           ) : (
             <p>{note}</p>
           )}

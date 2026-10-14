@@ -158,7 +158,7 @@ export default function Terminal() {
           <span>rovshan@portfolio: ~</span>
           <button type="button" className="terminal_close" onClick={close} aria-label="Close terminal">esc</button>
         </div>
-        <div className="terminal_screen" ref={screen} onClick={() => inputRef.current?.focus()}>
+        <div className="terminal_screen" data-lenis-prevent ref={screen} onClick={() => inputRef.current?.focus()}>
           {log.map((l, i) => (
             <p key={i} className={`t-${l.type}`}>
               {l.type === "in" && <span className="t-prompt">❯ </span>}

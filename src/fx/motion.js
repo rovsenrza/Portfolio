@@ -13,7 +13,7 @@ export function getLenis() {
 
 export function initSmoothScroll() {
   if (prefersReduced()) return () => {};
-  lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  lenis = new Lenis({ lerp: 0.12, smoothWheel: true, wheelMultiplier: 1 });
   lenis.on("scroll", ScrollTrigger.update);
   const raf = (t) => lenis.raf(t * 1000);
   gsap.ticker.add(raf);
@@ -55,7 +55,6 @@ export function initReveals(root) {
       gsap.from(el, {
         y: 36,
         opacity: 0,
-        filter: "blur(6px)",
         duration: 0.9,
         ease: "expo.out",
         scrollTrigger: { trigger: el, start: "top 85%", once: true },
@@ -69,8 +68,7 @@ export function initReveals(root) {
         gsap.from(els, {
           y: 60,
           opacity: 0,
-          rotateX: -12,
-          transformOrigin: "50% 100%",
+
           duration: 1,
           ease: "expo.out",
           stagger: 0.08,

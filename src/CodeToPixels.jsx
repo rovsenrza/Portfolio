@@ -101,7 +101,7 @@ export default function CodeToPixels() {
             const target = el.querySelector(`[data-preview="${scope}"] [data-build="${step}"]`);
             if (target && !target.dataset.played) {
               target.dataset.played = "1";
-              tl.fromTo(target, { opacity: 0, y: 18, scale: 0.92, filter: "blur(4px)" }, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 1.2, ease: "back.out(2)" }, "<0.2");
+              tl.fromTo(target, { opacity: 0, y: 18, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "back.out(2)" }, "<0.2");
             }
           }
         });

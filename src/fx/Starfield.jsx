@@ -102,24 +102,29 @@ export default function Starfield({ logoSrc }) {
   useEffect(() => {
     const canvas = ref.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const small = window.matchMedia("(max-width: 768px)").matches;
+    const coarse = window.matchMedia("(pointer: coarse), (max-width: 768px)").matches;
+    const weak = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+    if (reduced || coarse) {
+      document.documentElement.classList.add("no-webgl");
+      return;
+    }
 
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: "high-performance" });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: "low-power" });
     } catch {
       document.documentElement.classList.add("no-webgl");
       return;
     }
     document.documentElement.classList.add("has-webgl");
 
-    const dpr = Math.min(window.devicePixelRatio, 1.75);
+    const dpr = Math.min(window.devicePixelRatio, weak ? 1 : 1.25);
     renderer.setPixelRatio(dpr);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 400);
     camera.position.z = 20;
 
-    const count = small ? 2400 : 6500;
+    const count = weak ? 1800 : 3200;
     const pos = new Float32Array(count * 3);
     const rand = new Float32Array(count);
     for (let i = 0; i < count; i++) {
@@ -135,6 +140,7 @@ export default function Starfield({ logoSrc }) {
     geo.setAttribute("aRand", new THREE.BufferAttribute(rand, 1));
     geo.setAttribute("aTarget", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
 
+    let logoReady = false;
     const uniforms = {
       uTime: { value: 0 },
       uWarp: { value: 0 },
@@ -159,7 +165,7 @@ export default function Starfield({ logoSrc }) {
       if (!t) return;
       geo.attributes.aTarget.array.set(t);
       geo.attributes.aTarget.needsUpdate = true;
-      document.documentElement.classList.add("logo-ready");
+      logoReady = true;
     });
 
     // keep the formed logo glued to the About image's on-screen position
@@ -203,7 +209,7 @@ export default function Starfield({ logoSrc }) {
           start: "top top",
           end: "bottom top",
           onUpdate: (s) => {
-            gsap.to(uniforms.uWarp, { value: Math.sin(s.progress * Math.PI) ** 2, duration: 0.4, overwrite: true });
+            uniforms.uWarp.value = Math.sin(s.progress * Math.PI) ** 2;
             uniforms.uDim.value = 1 - s.progress * 0.55;
           },
         }),
@@ -216,6 +222,9 @@ export default function Starfield({ logoSrc }) {
             const up = gsap.utils.clamp(0, 1, (p - 0.12) / 0.3);
             const down = gsap.utils.clamp(0, 1, (p - 0.72) / 0.22);
             uniforms.uMorph.value = up * (1 - down);
+            placeLogo();
+            const img = document.querySelector(".about_img img");
+            if (img && logoReady) img.style.opacity = String(1 - Math.min(1, uniforms.uMorph.value * 1.4));
           },
         })
       );
@@ -223,26 +232,29 @@ export default function Starfield({ logoSrc }) {
 
     let raf = 0;
     let visible = true;
+    let onScreen = new Set();
     const clock = new THREE.Clock();
+    const start = () => { if (!raf) raf = requestAnimationFrame(tick); };
     const tick = () => {
+      raf = 0;
+      if (!visible || onScreen.size === 0) return;
       raf = requestAnimationFrame(tick);
-      if (!visible) return;
       uniforms.uTime.value = reduced ? 0 : clock.getElapsedTime();
       uniforms.uMouse.value.lerp(mouse, 0.05);
-      if (uniforms.uMorph.value > 0.001) placeLogo();
-      document.documentElement.style.setProperty("--logo-fade", String(1 - Math.min(1, uniforms.uMorph.value * 1.4)));
       renderer.render(scene, camera);
     };
-    if (reduced) {
-      renderer.render(scene, camera);
-    } else {
-      tick();
-    }
-    const onVis = () => { visible = !document.hidden; };
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? onScreen.add(e.target) : onScreen.delete(e.target)));
+      start();
+    });
+    document.querySelectorAll(".banner, .about").forEach((el) => io.observe(el));
+    start();
+    const onVis = () => { visible = !document.hidden; start(); };
     document.addEventListener("visibilitychange", onVis);
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       triggers.forEach((t) => t.kill());
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
