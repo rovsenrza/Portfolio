@@ -47,49 +47,45 @@ export function scrollToId(id) {
   else el.scrollIntoView();
 }
 
-// Section headings and copy rise in once, as each block reaches the reading line.
+// Section headings, project cards and contact cards rise in once, as each reaches the viewport.
+// IntersectionObserver instead of ScrollTrigger: page height keeps changing (lazy images,
+// content-visibility), and stale trigger positions near the bottom could never be reached.
 export function initReveals(root) {
   if (prefersReduced()) return () => {};
-  const ctx = gsap.context(() => {
-    gsap.utils.toArray("[data-reveal]", root).forEach((el) => {
-      gsap.from(el, {
-        y: 36,
-        opacity: 0,
-        duration: 0.9,
-        ease: "expo.out",
-        scrollTrigger: { trigger: el, start: "top 85%", once: true },
-      });
-    });
-
-    ScrollTrigger.batch(".project_card", {
-      start: "top 90%",
-      once: true,
-      onEnter: (els) =>
-        gsap.from(els, {
-          y: 60,
-          opacity: 0,
-
-          duration: 1,
-          ease: "expo.out",
-          stagger: 0.08,
-        }),
-    });
-
+  const groups = [
+    { els: gsap.utils.toArray("[data-reveal]", root), from: { y: 36, duration: 0.9 } },
+    { els: gsap.utils.toArray(".project_card", root), from: { y: 60, duration: 1 } },
     // the footer sits outside <main>, so target it by element rather than scoped selector
-    const footerCards = document.querySelectorAll(".contact_card");
-    const footerLeft = document.querySelector(".footer_left");
-    if (footerCards.length && footerLeft) {
-      gsap.from(footerCards, {
-        y: 40,
-        opacity: 0,
-        duration: 0.9,
-        ease: "expo.out",
-        stagger: 0.12,
-        scrollTrigger: { trigger: footerLeft, start: "top bottom", once: true },
+    { els: gsap.utils.toArray(".contact_card"), from: { y: 40, duration: 0.9 } },
+  ];
+  const settings = new Map();
+  groups.forEach((g) => g.els.forEach((el) => { settings.set(el, g.from); gsap.set(el, { opacity: 0, y: g.from.y }); }));
+
+  let queue = [];
+  let scheduled = false;
+  const flush = () => {
+    scheduled = false;
+    queue.forEach((el, i) => {
+      gsap.to(el, { opacity: 1, y: 0, duration: settings.get(el).duration, ease: "expo.out", delay: i * 0.08, clearProps: "transform,opacity" });
+    });
+    queue = [];
+  };
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        queue.push(e.target);
       });
-    }
-  }, root);
-  return () => ctx.revert();
+      if (queue.length && !scheduled) { scheduled = true; requestAnimationFrame(flush); }
+    },
+    { rootMargin: "0px 0px -8% 0px" }
+  );
+  settings.forEach((_, el) => io.observe(el));
+  return () => {
+    io.disconnect();
+    settings.forEach((_, el) => gsap.set(el, { clearProps: "transform,opacity" }));
+  };
 }
 
 // Cards lean toward the pointer; a light sheen follows it.

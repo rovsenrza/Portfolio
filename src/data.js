@@ -8,7 +8,7 @@ export const contact = {
   linkedin: "https://www.linkedin.com/in/rovshanrzayev/",
   github: "https://github.com/rovsenrza",
   facebook: "https://www.facebook.com/profile.php?id=100091345232600",
-  instagram: "https://www.instagram.com/rzayevv.o52/",
+  instagram: "https://www.instagram.com/rovshannrza/",
   cv: `${import.meta.env.BASE_URL}Rovshan-Rzayev-CV.pdf`,
 };
 

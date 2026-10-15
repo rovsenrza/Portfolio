@@ -15,6 +15,7 @@ const vertex = /* glsl */ `
   uniform vec3 uTargetOffset;
   uniform float uTargetScale;
   uniform float uPixelRatio;
+  uniform float uLogoPoint;
   varying float vAlpha;
   varying float vMorph;
 
@@ -28,15 +29,16 @@ const vertex = /* glsl */ `
 
     // jitter keeps the logo alive instead of frozen
     vec3 t = aTarget * uTargetScale + uTargetOffset;
-    t.xy += vec2(sin(uTime * 1.3 + aRand * 40.0), cos(uTime * 1.1 + aRand * 30.0)) * 0.035;
+    t.xy += vec2(sin(uTime * 1.3 + aRand * 40.0), cos(uTime * 1.1 + aRand * 30.0)) * 0.004;
     float m = smoothstep(0.0, 1.0, clamp(uMorph * 1.6 - aRand * 0.6, 0.0, 1.0));
     vec3 finalP = mix(p, t, m);
     vMorph = m;
 
     vec4 mv = modelViewMatrix * vec4(finalP, 1.0);
     gl_Position = projectionMatrix * mv;
-    float size = mix(0.8 + aRand * 1.4, 1.5, m);
-    gl_PointSize = min(size * uPixelRatio * (1.0 + uWarp * 0.6) * (60.0 / -mv.z), mix(5.0, 2.6, m) * uPixelRatio);
+    float travel = 0.8 + aRand * 1.4;
+    float star = min(travel * uPixelRatio * (1.0 + uWarp * 0.6) * (60.0 / -mv.z), 5.0 * uPixelRatio);
+    gl_PointSize = mix(star, uLogoPoint * uPixelRatio, m);
     vAlpha = mix(smoothstep(0.0, 0.35, depth) * (0.35 + aRand * 0.65), 0.95, m);
   }
 `;
@@ -47,47 +49,74 @@ const fragment = /* glsl */ `
   varying float vMorph;
   void main() {
     float d = length(gl_PointCoord - 0.5);
-    float a = smoothstep(0.5, 0.0, d);
+    // soft glow while flying, a hard round dot once it is part of the logo
+    float a = mix(smoothstep(0.5, 0.0, d), 1.0 - smoothstep(0.32, 0.5, d), vMorph);
     vec3 star = mix(vec3(0.78, 0.84, 1.0), vec3(1.0), a);
-    vec3 col = mix(star, vec3(0.86), vMorph);
+    vec3 col = mix(star, vec3(0.92), vMorph);
     gl_FragColor = vec4(col, a * vAlpha * mix(uDim, 1.0, vMorph));
   }
 `;
 
+// Turns the logo into particle targets. Letter outlines get most of the points so the
+// monogram reads as crisp strokes instead of a noisy fill; the frame ring is evenly spaced.
 function sampleLogo(src, count) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const size = 160;
+      const size = 560;
       const c = document.createElement("canvas");
       c.width = c.height = size;
       const ctx = c.getContext("2d", { willReadFrequently: true });
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, 0, 0, size, size);
       const data = ctx.getImageData(0, 0, size, size).data;
-      const pts = [];
-      const ring = [];
       const c0 = size / 2;
-      for (let y = 0; y < size; y += 1) {
-        for (let x = 0; x < size; x += 1) {
+      const dark = new Uint8Array(size * size);
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
           const i = (y * size + x) * 4;
           const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
           const r = Math.hypot(x - c0, y - c0) / c0;
           // only inside the light disc: the dark monogram and lettering
-          if (r < 0.9 && data[i + 3] > 128 && lum < 110) pts.push([(x / size - 0.5) * 2, -(y / size - 0.5) * 2]);
+          if (r < 0.9 && data[i + 3] > 128 && lum < 120) dark[y * size + x] = 1;
         }
       }
-      // a crisp outline circle frames the monogram
-      for (let k = 0; k < 900; k++) {
-        const a = (k / 900) * Math.PI * 2;
+      const edge = [];
+      const fill = [];
+      const toWorld = (x, y) => [(x / size - 0.5) * 2, -(y / size - 0.5) * 2];
+      for (let y = 1; y < size - 1; y++) {
+        for (let x = 1; x < size - 1; x++) {
+          const k = y * size + x;
+          if (!dark[k]) continue;
+          const onEdge = !dark[k - 1] || !dark[k + 1] || !dark[k - size] || !dark[k + size];
+          (onEdge ? edge : fill).push(toWorld(x, y));
+        }
+      }
+      // shuffle, then take an even stride so coverage is uniform with no duplicates
+      const pick = (arr, n) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        const out = [];
+        for (let i = 0; i < n && arr.length; i++) out.push(arr[Math.floor((i * arr.length) / n)]);
+        return out;
+      };
+      const nRing = Math.round(count * 0.16);
+      const nFill = Math.round(count * 0.22);
+      const nEdge = count - nRing - nFill;
+      const ring = [];
+      for (let k = 0; k < nRing; k++) {
+        const a = (k / nRing) * Math.PI * 2;
         ring.push([Math.cos(a) * 0.97, Math.sin(a) * 0.97]);
       }
-      const all = pts.concat(ring);
+      const all = ring.concat(pick(edge, nEdge), pick(fill, nFill));
       const out = new Float32Array(count * 3);
       for (let i = 0; i < count; i++) {
-        const p = all[Math.floor(Math.random() * all.length)] || [0, 0];
+        const p = all[i % all.length] || [0, 0];
         out[i * 3] = p[0];
         out[i * 3 + 1] = p[1];
-        out[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+        out[i * 3 + 2] = 0;
       }
       resolve(out);
     };
@@ -102,9 +131,9 @@ export default function Starfield({ logoSrc }) {
   useEffect(() => {
     const canvas = ref.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const coarse = window.matchMedia("(pointer: coarse), (max-width: 768px)").matches;
+    const mobile = window.matchMedia("(pointer: coarse), (max-width: 768px)").matches;
     const weak = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
-    if (reduced || coarse) {
+    if (reduced) {
       document.documentElement.classList.add("no-webgl");
       return;
     }
@@ -118,13 +147,14 @@ export default function Starfield({ logoSrc }) {
     }
     document.documentElement.classList.add("has-webgl");
 
-    const dpr = Math.min(window.devicePixelRatio, weak ? 1 : 1.25);
+    // enough resolution for the logo dots to stay sharp on retina screens
+    const dpr = Math.min(window.devicePixelRatio, weak ? 1.5 : 2);
     renderer.setPixelRatio(dpr);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 400);
     camera.position.z = 20;
 
-    const count = weak ? 1800 : 3200;
+    const count = weak ? 2600 : mobile ? 3400 : 5200;
     const pos = new Float32Array(count * 3);
     const rand = new Float32Array(count);
     for (let i = 0; i < count; i++) {
@@ -150,6 +180,7 @@ export default function Starfield({ logoSrc }) {
       uTargetOffset: { value: new THREE.Vector3(6, 0, 0) },
       uTargetScale: { value: 4 },
       uPixelRatio: { value: dpr },
+      uLogoPoint: { value: mobile ? 1.6 : 2 },
     };
     const mat = new THREE.ShaderMaterial({
       vertexShader: vertex,

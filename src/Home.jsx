@@ -35,10 +35,13 @@ function ProjectCard({ project }) {
   );
 }
 
-const heroCode = 'const rovshan = new Developer({ ios: "Swift", web: "React" });';
+const heroCodeFull = 'const rovshan = new Developer({ ios: "Swift", web: "React" });';
+// phones get the short form so the line types out on one row instead of breaking mid-token
+const heroCodeShort = 'new Developer({ ios: "Swift", web: "React" })';
 
 function HeroCode() {
   const ref = useRef(null);
+  const [heroCode] = useState(() => (window.matchMedia("(max-width: 575px)").matches ? heroCodeShort : heroCodeFull));
   useEffect(() => {
     const el = ref.current;
     if (prefersReduced()) {
@@ -54,7 +57,7 @@ function HeroCode() {
       onUpdate: () => { el.textContent = heroCode.slice(0, Math.round(state.n)); },
     });
     return () => tween.kill();
-  }, []);
+  }, [heroCode]);
   return (
     <p className="hero_code" aria-label={heroCode}>
       <span ref={ref} aria-hidden="true" />
