@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReduced } from "./fx/motion";
@@ -50,19 +50,31 @@ function highlight(line) {
     last = m.index + m[0].length;
   }
   if (last < line.length) parts.push([null, line.slice(last)]);
-  return parts.map(([cls, text], i) => (cls ? <span key={i} className={`tk-${cls}`}>{text}</span> : text));
+  // a break opportunity before each .method lets long lines wrap the way Swift chains are written
+  return parts.map(([cls, text], i) =>
+    cls === "m" ? (
+      <span key={i}><wbr /><span className="tk-m">{text}</span></span>
+    ) : cls ? (
+      <span key={i} className={`tk-${cls}`}>{text}</span>
+    ) : (
+      text
+    )
+  );
 }
 
 function Code({ lines, id }) {
   return (
     <pre className="code" aria-label={`${id} source`}>
       <code>
-        {lines.map(([text, step], i) => (
-          <span className="code_line" data-step={step || 0} key={i}>
-            <span className="code_no" aria-hidden="true">{i + 1}</span>
-            <span className="code_text">{highlight(text)}</span>
-          </span>
-        ))}
+        {lines.map(([text, step], i) => {
+          const indent = text.length - text.trimStart().length;
+          return (
+            <span className="code_line" data-step={step || 0} key={i}>
+              <span className="code_no" aria-hidden="true">{i + 1}</span>
+              <span className="code_text" style={{ "--indent": indent }}>{highlight(text.trimStart())}</span>
+            </span>
+          );
+        })}
       </code>
     </pre>
   );
@@ -70,6 +82,11 @@ function Code({ lines, id }) {
 
 export default function CodeToPixels() {
   const root = useRef(null);
+  // phones show one platform at a time; desktop pins and scrubs through both
+  const [active, setActive] = useState("ios");
+  const playRef = useRef(null);
+  const startedRef = useRef(false);
+  const autoRef = useRef(true);
 
   useEffect(() => {
     const el = root.current;
@@ -119,12 +136,71 @@ export default function CodeToPixels() {
       return () => el.querySelectorAll("[data-played]").forEach((n) => delete n.dataset.played);
     });
 
+    // phones and tablets: no pinning; the active file types itself out when the stage scrolls in
+    mm.add("(max-width: 991px) and (prefers-reduced-motion: no-preference)", () => {
+      let tl = null;
+      let next = 0;
+      const play = (scope) => {
+        tl?.kill();
+        clearTimeout(next);
+        const lines = el.querySelectorAll(`[data-scope="${scope}"] .code_line`);
+        const targets = el.querySelectorAll(`[data-preview="${scope}"] [data-build]`);
+        tl = gsap.timeline();
+        tl.set(lines, { clipPath: "inset(0 100% 0 0)", opacity: 0.2 });
+        tl.set(targets, { opacity: 0, y: 14, scale: 0.94 });
+        const seen = new Set();
+        lines.forEach((line) => {
+          tl.to(line, { clipPath: "inset(0 0% 0 0)", opacity: 1, duration: 0.32, ease: "none" });
+          const step = Number(line.dataset.step);
+          const target = step && el.querySelector(`[data-preview="${scope}"] [data-build="${step}"]`);
+          if (target && !seen.has(step)) {
+            seen.add(step);
+            tl.to(target, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(2)" }, "<0.1");
+          }
+        });
+        // after the SwiftUI view is built, hand over to the React card once, unless the visitor took over
+        tl.call(() => {
+          if (scope === "ios" && autoRef.current) next = setTimeout(() => { if (autoRef.current) setActive("web"); }, 1800);
+        });
+      };
+      playRef.current = play;
+
+      const io = new IntersectionObserver(
+        ([e]) => {
+          if (!e.isIntersecting || startedRef.current) return;
+          startedRef.current = true;
+          io.disconnect();
+          play(el.dataset.active || "ios");
+        },
+        { threshold: 0.35 }
+      );
+      io.observe(el.querySelector(".build_stage"));
+
+      return () => {
+        io.disconnect();
+        tl?.kill();
+        clearTimeout(next);
+        playRef.current = null;
+        startedRef.current = false;
+        gsap.set(el.querySelectorAll(".code_line, [data-build]"), { clearProps: "all" });
+      };
+    });
+
     if (prefersReduced()) el.classList.add("is-static");
     return () => mm.revert();
   }, []);
 
+  useEffect(() => {
+    if (startedRef.current) playRef.current?.(active);
+  }, [active]);
+
+  const choose = (scope) => {
+    autoRef.current = false;
+    setActive(scope);
+  };
+
   return (
-    <section className="build" id="build" ref={root}>
+    <section className="build" id="build" ref={root} data-active={active}>
       <div className="container">
         <h3 data-reveal>From code to pixels</h3>
         <p className="build_intro" data-reveal>
@@ -134,8 +210,10 @@ export default function CodeToPixels() {
           <div className="editor">
             <div className="editor_bar">
               <span className="dots" aria-hidden="true"><i /><i /><i /></span>
-              <span className="build_tab build_tab--ios is-active">ProfileView.swift</span>
-              <span className="build_tab build_tab--web">ProjectCard.jsx</span>
+              <div className="build_tabs" role="tablist" aria-label="Source file">
+                <button type="button" role="tab" aria-selected={active === "ios"} className={`build_tab build_tab--ios${active === "ios" ? " is-active" : ""}`} onClick={() => choose("ios")}>ProfileView.swift</button>
+                <button type="button" role="tab" aria-selected={active === "web"} className={`build_tab build_tab--web${active === "web" ? " is-active" : ""}`} onClick={() => choose("web")}>ProjectCard.jsx</button>
+              </div>
             </div>
             <div className="editor_body">
               <div className="code_scope" data-scope="ios"><Code lines={swift} id="SwiftUI" /></div>
